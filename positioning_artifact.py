@@ -89,8 +89,8 @@ def _positioning(spot: float) -> tuple[dict, str | None]:
     )
 
 
-def build_artifact() -> dict:
-    conn = sqlite3.connect(DB_PATH)
+def build_artifact(db_path: str = DB_PATH) -> dict:
+    conn = sqlite3.connect(db_path)
     indices = _latest_indices(conn)
     drift = _drift(conn)
     conn.close()

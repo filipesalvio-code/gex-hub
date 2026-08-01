@@ -25,3 +25,6 @@ py-modules = ["gex_scraper", "positioning_artifact", "plot_spx_gamma"]
 
 [tool.ruff]
 line-length = 110
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
