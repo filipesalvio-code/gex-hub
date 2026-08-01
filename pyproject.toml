@@ -41,6 +41,7 @@ extend-exclude = ["attic"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 markers = [
     "unit: pure-function tests, no subprocess, no sqlite files",
     "integration: stdio subprocess and/or real sqlite file I/O",
