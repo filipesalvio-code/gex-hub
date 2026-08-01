@@ -43,6 +43,20 @@ captured from the owner's own Chrome via the Kimi WebBridge daemon
         protected by LaunchAgent watcher + guard
 ```
 
+## Setup
+
+Requires Python 3.11+.
+
+```bash
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+```
+
+This installs the importable modules `gex_scraper`, `positioning_artifact` and
+`plot_spx_gamma` plus runtime deps (`requests`, `pandas`, `duckdb`,
+`matplotlib`, `msgpack`). The `mcp/menthorq_mcp.py` server is stdlib-only; the
+SpotGamma MCP server is Node (`spotgamma-mcp/`, see its README).
+
 ## Directory map
 
 ### Core systems

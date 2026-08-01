@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gex-hub"
+version = "0.1.0"
+description = "Local-first options-positioning (GEX) data hub: MenthorQ & SpotGamma MCP servers, scrapers, and analysis tools"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Proprietary"}
+dependencies = [
+  "requests>=2.31",
+  "pandas>=2.0",
+  "duckdb>=0.10",
+  "matplotlib>=3.8",
+  "msgpack>=1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[tool.setuptools]
+py-modules = ["gex_scraper", "positioning_artifact", "plot_spx_gamma"]
+
+[tool.ruff]
+line-length = 110

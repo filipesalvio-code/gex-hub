@@ -21,14 +21,19 @@ import sqlite3
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(sys.executable).parent.parent.parent))
-from daimon_runtime import setup_plot  # noqa: E402
-
-import matplotlib.pyplot as plt  # noqa: E402
-import pandas as pd  # noqa: E402
+import matplotlib.pyplot as plt
+import pandas as pd
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DB_PATH = SCRIPT_DIR / "gex_data.db"
+
+
+def setup_plot() -> None:
+    """Apply the plotting style previously provided by daimon_runtime.
+
+    seaborn darkgrid: light axes background with white gridlines.
+    """
+    plt.style.use("seaborn-v0_8-darkgrid")
 
 
 def load_data(db: sqlite3.Connection, sym: str, date: str | None):

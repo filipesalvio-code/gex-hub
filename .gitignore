@@ -74,3 +74,7 @@ scraper/tmp_*
 spx_gamma_curve.png
 guide_*_body.txt
 home_2022_body.txt
+
+# Python packaging
+*.egg-info/
+__pycache__/
