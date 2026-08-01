@@ -1,5 +1,7 @@
 # SpotGamma Dashboard API — Endpoint Catalog
 
+> **Unofficial, personal-use documentation.** Reverse-engineered from the owner's own account; not affiliated with or endorsed by the platform. No data included.
+
 Discovered: 2026-07-25 from `https://dashboard.spotgamma.com/home` via live network capture + static analysis of the app bundle (`index-CuGCoWOa.js`, `PollingWorker-CpJqDE6X.js`).
 
 ## Base configuration

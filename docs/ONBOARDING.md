@@ -1,6 +1,6 @@
 # Onboarding Guide
 
-Welcome to the GEX Scrapping workspace — a local-first options-positioning
+Welcome to the gex-hub workspace — a local-first options-positioning
 data hub covering two platforms (MenthorQ, SpotGamma), two MCP servers,
 three databases, and a pile of research. This guide gets you productive.
 

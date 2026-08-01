@@ -1,5 +1,7 @@
 # MenthorQ API Endpoint Catalog
 
+> **Unofficial, personal-use documentation.** Reverse-engineered from the owner's own account; not affiliated with or endorsed by the platform. No data included.
+
 Discovered 2026-07-25 via network capture + Next.js bundle analysis of `dashboard.menthorq.io`,
 verified with live authenticated calls (user's own Premium session). Source of truth: `menthorq.db` table `api_endpoints`.
 

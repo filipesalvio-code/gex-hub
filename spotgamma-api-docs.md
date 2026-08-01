@@ -1,5 +1,7 @@
 # SpotGamma API — Full Reference Documentation
 
+> **Unofficial, personal-use documentation.** Reverse-engineered from the owner's own account; not affiliated with or endorsed by the platform. No data included.
+
 Reverse-engineered from the SpotGamma dashboard (`dashboard.spotgamma.com`) on 2026-07-25.
 Every endpoint below was **called live with a real subscriber session**; all response samples are actual API returns for **SPX** (trade date 2026-07-23/24), trimmed for readability. Full untrimmed samples are in `probes.json` in this workspace.
 

@@ -138,8 +138,8 @@ scrapers on another machine.
 | `SpotGamma-for-Traders/` | 10-page SpotGamma intro deck |
 
 ### Reference & research
-`API_ENDPOINTS.md` (MenthorQ API catalog) · `spotgamma-api-endpoints.md` /
-`spotgamma-api-docs.md` (SpotGamma catalogs) · *(local-only)* `QUIN_dossier.md`,
+`API_ENDPOINTS.md` (MenthorQ API catalog — unofficial, personal use) · `spotgamma-api-endpoints.md` /
+`spotgamma-api-docs.md` (SpotGamma catalogs — unofficial, personal use) · *(local-only)* `QUIN_dossier.md`,
 `QUIN_AI_Distillation.md`, `dossier/`, `quin_research/` (QUIN AI research) ·
 `menthorq-legal-corporate-report.md`, `terms-of-use.*`, `cookie-policy.*`
 (legal) · `*.html` (archived platform pages) · `probes.json`
