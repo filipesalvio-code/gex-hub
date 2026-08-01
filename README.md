@@ -97,11 +97,10 @@ Remove: `launchctl unload ~/Library/LaunchAgents/<name>.plist` + delete the plis
 `spotgamma-api-docs.md` (SpotGamma catalogs) · `QUIN_dossier.md`,
 `QUIN_AI_Distillation.md`, `dossier/`, `quin_research/` (QUIN AI research) ·
 `menthorq-legal-corporate-report.md`, `terms-of-use.*`, `cookie-policy.*`
-(legal) · `*.html` (archived platform pages) · `probes.json`, `probe_api.py`
-(endpoint probes)
-
-> Many root-level `*.py`/`*.js` and most `scraper/run_*`/`extract_*` files are
-> **historical one-off campaign scripts** — kept for provenance, not maintained.
+(legal) · `*.html` (archived platform pages) · `probes.json`
+(endpoint probe results) · `attic/` (historical one-off campaign scripts —
+`probe_api.py`, `rescrape_eh_hiro.py`, `scrape_daily.py`, `gex_binary.py`,
+`update_deck.py`; kept for provenance, not maintained)
 
 ## Runbook
 
