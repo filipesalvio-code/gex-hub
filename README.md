@@ -1,4 +1,39 @@
-# GEX Scrapping — Options-Positioning Data Hub
+# gex-hub
+
+Local-first hub for options positioning / gamma-exposure (GEX) data.
+MCP servers that let AI assistants query MenthorQ & SpotGamma with **your own** session — plus scrapers, a time-series store, and charting.
+
+## Quickstart
+
+Requires Python 3.11+ (Node 18+ for the SpotGamma MCP server).
+
+```bash
+pip install -e ".[dev]"
+python3 mcp/test_mcp.py        # needs your Chrome session (see docs/ONBOARDING.md)
+```
+
+## What you get
+
+- `menthorq` MCP server — 24 tools (positioning, gamma levels, …)
+- `spotgamma` MCP server — 45 tools + automatic token refresh
+- GEX time series → sqlite/parquet, SPX gamma-curve plots
+
+> Unofficial, personal-use tooling. Requires your own paid MenthorQ/SpotGamma
+> accounts. No data is included or redistributed.
+
+## Documentation
+
+- [docs/](docs/README.md) — architecture, API reference, runbook, onboarding, contributing
+- [LICENSE](LICENSE) — proprietary, source-available (all rights reserved)
+- [SECURITY.md](SECURITY.md) — token policy, data policy, how to report issues
+
+---
+
+## For maintainers
+
+> Everything below is the original operator documentation. Paths marked
+> *(local-only)* are gitignored and absent from the public repo; they exist
+> only in the owner's full workspace.
 
 📖 Full documentation: [docs/](docs/README.md) — architecture, API reference, runbook, onboarding, contributing.
 
@@ -15,7 +50,7 @@ Two data platforms are integrated:
 
 No passwords are stored anywhere. All access runs on live-session tokens
 captured from the owner's own Chrome via the Kimi WebBridge daemon
-(`http://127.0.0.1:10086`).
+(`http://127.0.0.1:10086`) or supplied via environment variables.
 
 ## Big picture
 
@@ -55,7 +90,8 @@ pip install -e ".[dev]"
 This installs the importable modules `gex_scraper`, `positioning_artifact` and
 `plot_spx_gamma` plus runtime deps (`requests`, `pandas`, `duckdb`,
 `matplotlib`, `msgpack`). The `mcp/menthorq_mcp.py` server is stdlib-only; the
-SpotGamma MCP server is Node (`spotgamma-mcp/`, see its README).
+SpotGamma MCP server is Node (`spotgamma-mcp/`, see its README). Copy
+`.env.example` to `.env` for optional token overrides.
 
 ## Directory map
 
@@ -64,12 +100,15 @@ SpotGamma MCP server is Node (`spotgamma-mcp/`, see its README).
 |---|---|
 | `mcp/` | **MenthorQ MCP server** (`menthorq_mcp.py`), tests, doc generator, `mcp_guard.py` (registration self-healer). Docs: `mcp/README.md`, full tool reference `mcp/MCP_DOCS.md` |
 | `spotgamma-mcp/` | **SpotGamma MCP server** (`server.js`, 45 tools) + `token_refresh.py` (unattended sgToken capture). Docs: `spotgamma-mcp/README.md`, `spotgamma-mcp/DOCUMENTATION.md` |
-| `scraper/` | MenthorQ scraping campaign tooling (`mq_api.py`, `mq_db.py`, `mq_work_units.json`, `mq_agent_brief.md`) + legacy one-off extraction scripts — see `scraper/README.md` |
-| `gex_scraper.py` | SpotGamma GEX scraper → `gex_data.db` (key levels + ~10k-symbol GEX); auto-refreshes `sg_token.txt` via WebBridge |
+| `scraper/` | MenthorQ scraping campaign tooling (`mq_api.py`, `mq_db.py`, `mq_work_units.json`, `mq_agent_brief.md`) — see `scraper/README.md` |
+| `gex_scraper.py` | SpotGamma GEX scraper → `gex_data.db` (key levels + ~10k-symbol GEX); token from `SG_TOKEN` env or live WebBridge capture (never written to disk) |
 | `positioning_artifact.py` | Builds positioning-dashboard artifact from `gex_data.db` + `data/oi/*.parquet` (duckdb, offline) |
 | `plot_spx_gamma.py` | SPX gamma-curve plotting → `spx_gamma_curve.png` |
+| `attic/` | Historical one-off campaign scripts (`probe_api.py`, `rescrape_eh_hiro.py`, `scrape_daily.py`, `gex_binary.py`, `update_deck.py`); kept for provenance, not maintained — see `attic/README.md` |
+| `tests/` | Offline pytest suite (mocked token, in-memory DB); runs in CI |
+| `docs/` | Long-form documentation index — see `docs/README.md` |
 
-### Databases
+### Databases *(local-only — gitignored by design, see SECURITY.md)*
 | File | Contents |
 |---|---|
 | `menthorq.db` (3.1 MB) | MenthorQ archive: 230 verbatim API responses, 1,256-instrument `tickers`, 34-endpoint `api_endpoints` catalog, `scrape_runs` |
@@ -85,7 +124,13 @@ SpotGamma MCP server is Node (`spotgamma-mcp/`, see its README).
 
 Remove: `launchctl unload ~/Library/LaunchAgents/<name>.plist` + delete the plist.
 
-### Presentations (kimi-slides `.pptd`; export PPTX only via the editor)
+**Single-machine components.** `mcp/mcp_guard.py`, `spotgamma-mcp/token_refresh.py`
+and the LaunchAgents above are macOS/user-specific automation for the owner's
+machine (they manage the owner's `mcp.json` and browser session). They are not
+part of the portable tooling and are not needed to use the MCP servers or
+scrapers on another machine.
+
+### Presentations *(local-only — not in the public repo)*
 | Path | Deck |
 |---|---|
 | `presentation/menthorq_trader/` | 12-page MenthorQ×Kimi deck for options traders (dark terminal style, real SPX data 2026-07-24) |
@@ -94,22 +139,25 @@ Remove: `launchctl unload ~/Library/LaunchAgents/<name>.plist` + delete the plis
 
 ### Reference & research
 `API_ENDPOINTS.md` (MenthorQ API catalog) · `spotgamma-api-endpoints.md` /
-`spotgamma-api-docs.md` (SpotGamma catalogs) · `QUIN_dossier.md`,
+`spotgamma-api-docs.md` (SpotGamma catalogs) · *(local-only)* `QUIN_dossier.md`,
 `QUIN_AI_Distillation.md`, `dossier/`, `quin_research/` (QUIN AI research) ·
 `menthorq-legal-corporate-report.md`, `terms-of-use.*`, `cookie-policy.*`
 (legal) · `*.html` (archived platform pages) · `probes.json`
-(endpoint probe results) · `attic/` (historical one-off campaign scripts —
-`probe_api.py`, `rescrape_eh_hiro.py`, `scrape_daily.py`, `gex_binary.py`,
-`update_deck.py`; kept for provenance, not maintained)
+(endpoint probe results)
 
 ## Runbook
 
 **Test the MCP servers**
 ```bash
-python3 mcp/test_mcp.py      # MenthorQ smoke (5 calls)
+python3 mcp/test_mcp.py      # MenthorQ smoke (5 calls) — needs your Chrome session
 python3 mcp/test_all.py      # MenthorQ exhaustive (all 24 tools, via mcp.json config)
 ```
 SpotGamma: boot check = run `server.js` and speak JSON-RPC (see `spotgamma-mcp/README.md`).
+
+**Run the offline tests**
+```bash
+python3 -m pytest tests/     # no network, no token, no Chrome needed
+```
 
 **Check registration health**
 ```bash
@@ -144,8 +192,9 @@ PPTX **only** via the editor's export button (never CLI). Validate after edits:
 3. **kimi-slides YAML**: quote any text containing `:` or `,` inside flow maps
    (a bare comma silently truncates text); dark decks need explicit chart
    `fill`; one `.pptd` per directory.
-4. **Tokens never in the repo as a rule.** `sg_token.txt` is a legacy exception
-   used by `gex_scraper.py`; new code uses env vars or live capture only.
+4. **Tokens never in the repo or on disk.** Token resolution is `$SG_TOKEN` /
+   `$MENTHORQ_TOKEN` env vars or live WebBridge capture only — nothing is
+   written to a token file.
 5. Everything is local-first: databases, logs, decks and docs live in this
    workspace; nothing is uploaded.
 

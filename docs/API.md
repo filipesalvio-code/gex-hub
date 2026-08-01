@@ -153,19 +153,19 @@ python3 gex_scraper.py --quiet
 
 Exit codes: `0` ok, `2` partial, `1` nothing scraped. Prints a JSON summary
 (`status`, `trade_date`, row counts, errors, `token_refreshed`).
-Auth: `SG_TOKEN` env → `sg_token.txt` → automatic WebBridge refresh on
+Auth: `SG_TOKEN` env → automatic WebBridge refresh on
 401/403 or near-expiry (6 h margin). Stdlib only.
 Schema: `key_levels(sym, trade_date, …curated cols…, raw_json)`,
 `equities_gex(…)`, `scrape_runs` — upsert keyed on `(sym, trade_date)`.
 
-### `gex_binary.py` — binary payload decoders → `data/*.parquet`
+### `gex_binary.py` (now in `attic/`) — binary payload decoders → `data/*.parquet`
 
 ```bash
-python3 gex_binary.py oi SPX          # per-actor OI matrix (MessagePack) → data/oi_spx.parquet
-python3 gex_binary.py greeks SPX      # latest greeks → data/greeks_spx_latest.parquet
-python3 gex_binary.py greeks SPX 2026-07-24   # dated greeks
-python3 gex_binary.py ivstats SPX     # IV stats summary (printed)
-python3 gex_binary.py bars SPX gamma  # intraday strike bars (Parquet) → data/strike_bars_spx_gamma.parquet
+python3 attic/gex_binary.py oi SPX          # per-actor OI matrix (MessagePack) → data/oi_spx.parquet
+python3 attic/gex_binary.py greeks SPX      # latest greeks → data/greeks_spx_latest.parquet
+python3 attic/gex_binary.py greeks SPX 2026-07-24   # dated greeks
+python3 attic/gex_binary.py ivstats SPX     # IV stats summary (printed)
+python3 attic/gex_binary.py bars SPX gamma  # intraday strike bars (Parquet) → data/strike_bars_spx_gamma.parquet
 ```
 
 Requires `msgpack` and `duckdb` (Kimi managed runtime). Reuses

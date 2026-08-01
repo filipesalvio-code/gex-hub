@@ -71,7 +71,7 @@ python3 spotgamma-mcp/token_refresh.py   # needs Chrome open + SpotGamma login
 Exit codes: `0` refreshed (or already current), `2` could not capture (Chrome
 closed / logged out — harmless, the next scheduled run retries).
 Verify: `python3 mcp/mcp_guard.py --status` shows `spotgamma: registered (with user token)`.
-`gex_scraper.py` self-heals its own `sg_token.txt` on 401/403 — no action
+`gex_scraper.py` self-refreshes its token via WebBridge on 401/403 — no action
 needed for the scraper.
 
 Rollback: remove `SPOTGAMMA_SG_TOKEN` from the `spotgamma` env block in
@@ -99,6 +99,7 @@ Rollback: archive data is insert-only; delete rows by `run_id` from
 Legacy campaign (results in `spotgamma.db`): one agent per unit in
 `scraper/work_units.json` following `scraper/agent_brief.md`, writing via
 `scraper/db_writer.py`. For a single-page refresh, adapt `scrape_daily.py`
+(now in `attic/`)
 (page list + extraction JS per page). Full schema and query cookbook:
 [../SPOTGAMMA_DB_DOCUMENTATION.md](../SPOTGAMMA_DB_DOCUMENTATION.md).
 
@@ -153,8 +154,9 @@ plain files in this workspace — delete or keep.
 2. **WebBridge `evaluate` targets the last `navigate`d tab**, not `find_tab`
    selections. All token probes origin-check `location.href` and fall back to
    opening a fresh tab.
-3. **`sg_token.txt` is the only token on disk** (legacy, used by
-   `gex_scraper.py`). New code: env vars or live capture only.
+3. **No tokens on disk.** `gex_scraper.py` and the MCP servers resolve tokens
+   from env vars (`SG_TOKEN`, `MENTHORQ_TOKEN`) or live WebBridge capture
+   only; nothing is written to a token file.
 4. **Display strings in `spotgamma.db`** carry units (`"3.15B"`, `"15.47%"`) —
    parse before math (helper in `SPOTGAMMA_DB_DOCUMENTATION.md` §4).
 5. **Weekend captures freeze at Friday's close** — recorded honestly in

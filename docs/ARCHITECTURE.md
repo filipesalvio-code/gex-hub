@@ -56,10 +56,10 @@ All access uses the owner's own live sessions; no passwords are stored.
 | Registration guard | `mcp/mcp_guard.py` + LaunchAgent `com.menthorq.mcpguard` | Re-adds the `menthorq` and `spotgamma` entries to Kimi's `mcp.json` whenever the file changes (MERGE-only, atomic write, mode 600) |
 | SpotGamma MCP server | `spotgamma-mcp/server.js` | Node stdio MCP server (MCP SDK + zod); 45 tools over `api.spotgamma.com`; static app token + optional `SPOTGAMMA_SG_TOKEN` bearer |
 | SpotGamma token refresh | `spotgamma-mcp/token_refresh.py` + LaunchAgent `com.spotgamma.tokenrefresh` | Daily 09:17: captures `localStorage["sgToken"]` from Chrome via WebBridge, merges into `mcp.json` env |
-| GEX scraper | `gex_scraper.py` | Stdlib-only scheduled scraper: `home/keyLevels` → `gex_data.db.key_levels`, `v4/equities` → `equities_gex` (~10k symbols); self-refreshes `sg_token.txt` on 401/403 |
-| Binary decoders | `gex_binary.py` | Decodes SpotGamma's MessagePack/Parquet payloads (OI matrix, greeks, IV stats, intraday strike bars) → `data/*.parquet` |
+| GEX scraper | `gex_scraper.py` | Stdlib-only scheduled scraper: `home/keyLevels` → `gex_data.db.key_levels`, `v4/equities` → `equities_gex` (~10k symbols); self-refreshes its token via WebBridge on 401/403 |
+| Binary decoders | `gex_binary.py` (now in `attic/`) | Decodes SpotGamma's MessagePack/Parquet payloads (OI matrix, greeks, IV stats, intraday strike bars) → `data/*.parquet` |
 | MenthorQ scrape campaign | `scraper/mq_api.py`, `mq_db.py`, `mq_work_units.json`, `mq_agent_brief.md` | 20-unit parallel-agent full-platform archive → `menthorq.db` |
-| SpotGamma scrape campaign | `scraper/db_writer.py`, `work_units.json`, `agent_brief.md`, `scrape_daily.py` | 20-unit DOM-scrape of the dashboard → `spotgamma.db` |
+| SpotGamma scrape campaign | `scraper/db_writer.py`, `work_units.json`, `agent_brief.md`, `scrape_daily.py` (now in `attic/`) | 20-unit DOM-scrape of the dashboard → `spotgamma.db` |
 | Analysis outputs | `plot_spx_gamma.py`, `positioning_artifact.py` | Gamma-curve charts and the positioning-dashboard artifact, built offline from the local archive |
 
 ## Key decisions and trade-offs
@@ -67,7 +67,8 @@ All access uses the owner's own live sessions; no passwords are stored.
 1. **Live-session tokens instead of stored credentials.**
    No passwords anywhere. MenthorQ tokens are read per call from the open
    browser tab; the SpotGamma JWT (~3-day life) is captured daily into
-   `mcp.json` and `sg_token.txt` (documented legacy exception).
+   `mcp.json` env; `gex_scraper.py` resolves it from `$SG_TOKEN` or live
+   WebBridge capture (never written to disk).
    *Trade-off:* everything depends on the owner being logged in somewhere —
    accepted deliberately, since the account is the owner's.
 
@@ -93,7 +94,7 @@ All access uses the owner's own live sessions; no passwords are stored.
    `gex_scraper.py`, `mcp_guard.py`, `token_refresh.py`, `menthorq_mcp.py` use
    only the Python standard library so they run under the Kimi managed runtime
    and survive environment churn. Heavier deps (msgpack, duckdb, pandas,
-   matplotlib) are confined to interactive tools (`gex_binary.py`,
+   matplotlib) are confined to interactive tools (`attic/gex_binary.py`,
    `plot_spx_gamma.py`, `positioning_artifact.py`).
 
 6. **WebBridge as the browser bridge — with origin guards.**
@@ -124,7 +125,7 @@ headers (+ `Authorization: Bearer $SPOTGAMMA_SG_TOKEN` when set; `use_free`
 variants otherwise) → `api.spotgamma.com` → JSON (truncated at 200 KB).
 
 **SpotGamma (archive path):** `gex_scraper.py` (key levels + equities GEX,
-upserted by `(sym, trade_date)`) and `gex_binary.py archive_oi` (per-actor OI
+upserted by `(sym, trade_date)`) and `attic/gex_binary.py archive_oi` (per-actor OI
 matrix, one parquet per US-Eastern calendar day in `data/oi/`). A separate
 20-agent DOM campaign (`spotgamma.db`) captured the dashboard widgets,
 including SVG-digitized chart series.

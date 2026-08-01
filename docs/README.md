@@ -1,4 +1,7 @@
-# GEX Scrapping — Documentation Index
+# gex-hub — Documentation Index
+
+> This index reflects the full local workspace; entries marked local-only are
+> gitignored and absent from the public repo.
 
 Start with the root [README.md](../README.md) (what this is, quick start,
 directory map). This `docs/` folder holds the long-form documentation.
@@ -23,14 +26,14 @@ directory map). This `docs/` folder holds the long-form documentation.
 - [mcp/README.md](../mcp/README.md), [mcp/MCP_DOCS.md](../mcp/MCP_DOCS.md) — MenthorQ MCP server + generated tool reference
 - [spotgamma-mcp/README.md](../spotgamma-mcp/README.md), [spotgamma-mcp/DOCUMENTATION.md](../spotgamma-mcp/DOCUMENTATION.md) — SpotGamma MCP server + generated tool reference
 - [scraper/README.md](../scraper/README.md) — scraping-campaign tooling
-- [presentation/README.md](../presentation/README.md) — slide-deck rules
+- [attic/README.md](../attic/README.md) — historical one-off scripts (provenance only)
+- `presentation/README.md` (local-only) — slide-deck rules
 
 ## Research corpus (background, not operational)
 
-QUIN AI research: [QUIN_dossier.md](../QUIN_dossier.md),
-[QUIN_AI_Distillation.md](../QUIN_AI_Distillation.md),
-[quin_menthorq_research.md](../quin_menthorq_research.md),
-[dossier/](../dossier/). Legal: [menthorq-legal-corporate-report.md](../menthorq-legal-corporate-report.md),
+QUIN AI research (all local-only): `QUIN_dossier.md`,
+`QUIN_AI_Distillation.md`, `quin_menthorq_research.md`, `dossier/`,
+`quin_research/`. Legal (local-only): `menthorq-legal-corporate-report.md`,
 `terms-of-use.*`, `cookie-policy.*`.
 
 > Keep it current: when you change a system, update the doc that lives

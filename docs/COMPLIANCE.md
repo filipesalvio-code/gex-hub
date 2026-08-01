@@ -11,7 +11,7 @@ against.
 
 The public repository contains **code only**: the MCP servers (`mcp/`,
 `spotgamma-mcp/`), the scrapers and analysis code (`gex_scraper.py`,
-`gex_binary.py`, `positioning_artifact.py`, `plot_spx_gamma.py`, `scraper/`),
+`gex_binary.py` (in `attic/`), `positioning_artifact.py`, `plot_spx_gamma.py`, `scraper/`),
 and the documentation. The endpoint catalogs (`API_ENDPOINTS.md`,
 `spotgamma-api-endpoints.md`, `spotgamma-api-docs.md`) stay in-repo, marked
 **unofficial, personal use**.

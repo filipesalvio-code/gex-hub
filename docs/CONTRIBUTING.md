@@ -8,9 +8,8 @@ things already went wrong at least once.
 1. **`mcp.json` is shared — MERGE, never replace.** Read the file, change
    your keys, write back atomically (`tmp` + `os.replace`), keep mode 600.
    Other tools count on the same courtesy. Use `mcp/mcp_guard.py`'s pattern.
-2. **No passwords, no tokens in code or new files.** The only token on disk
-   is `sg_token.txt` (legacy, used by `gex_scraper.py`; auto-refreshed). New
-   code takes tokens from env vars (`MENTHORQ_TOKEN`, `SG_TOKEN`,
+2. **No passwords, no tokens in code, files, or on disk.** Code takes tokens
+   from env vars (`MENTHORQ_TOKEN`, `SG_TOKEN`,
    `SPOTGAMMA_SG_TOKEN`) or captures them live via WebBridge — and never
    writes them to the DB, logs, or reports.
 3. **Archive raw, parse late.** Scrape code stores verbatim payloads via the
@@ -26,12 +25,13 @@ things already went wrong at least once.
 
 ## Where things live (and what not to touch)
 
-- `mcp/`, `spotgamma-mcp/`, `gex_scraper.py`, `gex_binary.py`,
+- `mcp/`, `spotgamma-mcp/`, `gex_scraper.py`,
   `positioning_artifact.py`, `plot_spx_gamma.py`, `scraper/mq_*.py` —
   **maintained code**. Changes welcome; follow the patterns above.
 - `scraper/run_*.py`, `scraper/extract_*.js`, `scraper/probe_*.js`,
-  `scraper/sg1*_*.py`, `scraper/agent16_*`, `update_deck.py`,
-  `scrape_daily.py`, `rescrape_eh_hiro.py`, root `*.html`/`*.txt` archives —
+  `scraper/sg1*_*.py`, `scraper/agent16_*`, `attic/` (`gex_binary.py`,
+  `update_deck.py`, `scrape_daily.py`, `rescrape_eh_hiro.py`, `probe_api.py`),
+  root `*.html`/`*.txt` archives —
   **historical one-off artifacts, kept for provenance.** Treat as read-only
   reference; write new scripts instead of editing them.
 - `probes.json`, `data/`, `*.db` — **data**. Regenerate via the tools; don't

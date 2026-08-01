@@ -11,7 +11,7 @@ three databases, and a pile of research. This guide gets you productive.
 2. **Python**: use the Kimi managed runtime (`python3` inside Kimi Work). All
    scheduled/critical scripts are stdlib-only; the analysis tools additionally
    use the runtime's bundled `pandas`/`matplotlib`/`duckdb`. For
-   `gex_binary.py` you also need `msgpack` (`pip install msgpack` into a user
+   `gex_binary.py` (now in `attic/`) you also need `msgpack` (`pip install msgpack` into a user
    env if missing).
 3. **Node**: 18+ (developed on Node 24). One-time:
    ```bash
@@ -28,7 +28,8 @@ three databases, and a pile of research. This guide gets you productive.
    ```
 
 You do **not** need any password: auth is live-session tokens captured from
-the browser. The only token file is `sg_token.txt` (legacy; auto-refreshed).
+the browser via env vars (`SG_TOKEN`, `MENTHORQ_TOKEN`) or live WebBridge
+capture. No token files are kept on disk.
 
 ## 2. Key systems and how they connect
 
@@ -41,7 +42,7 @@ version:
   insert-only `raw_responses` + `tickers` + `api_endpoints` catalog).
 - **SpotGamma** data comes three ways: *live* through the `spotgamma` MCP
   server (45 tools → `api.spotgamma.com`), *time series* from
-  `gex_scraper.py` into `gex_data.db` (+ `gex_binary.py` → `data/*.parquet`),
+  `gex_scraper.py` into `gex_data.db` (+ `attic/gex_binary.py` → `data/*.parquet`),
   and a one-shot DOM scrape of the dashboard in `spotgamma.db`.
 - **Kimi registration** of both servers lives in the shared `mcp.json`,
   watched by a LaunchAgent that re-heals our entries (`mcp/mcp_guard.py`).
@@ -82,9 +83,9 @@ python3 plot_spx_gamma.py --sym QQQ --window 800
 ### "Pull the full per-actor OI matrix"
 
 ```bash
-python3 gex_binary.py oi SPX         # → data/oi_spx.parquet
+python3 attic/gex_binary.py oi SPX         # → data/oi_spx.parquet
 # or the deduped daily archive:
-python3 -c "import gex_binary; print(gex_binary.archive_oi('SPX'))"
+python3 -c "import sys; sys.path.insert(0, 'attic'); import gex_binary; print(gex_binary.archive_oi('SPX'))"
 ```
 
 ### "Query the SpotGamma dashboard archive"
