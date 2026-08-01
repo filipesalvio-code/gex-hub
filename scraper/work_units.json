@@ -1,0 +1,25 @@
+{
+  "base": "https://dashboard.spotgamma.com",
+  "units": [
+    {"id": 1,  "agent": "sg-agent-01", "section": "market-overview",      "path": "/home"},
+    {"id": 2,  "agent": "sg-agent-02", "section": "equityhub-spx",        "path": "/equityhub?sym=SPX"},
+    {"id": 3,  "agent": "sg-agent-03", "section": "equityhub-spy",        "path": "/equityhub?sym=SPY"},
+    {"id": 4,  "agent": "sg-agent-04", "section": "equityhub-qqq",        "path": "/equityhub?sym=QQQ"},
+    {"id": 5,  "agent": "sg-agent-05", "section": "equityhub-ndx",        "path": "/equityhub?sym=NDX"},
+    {"id": 6,  "agent": "sg-agent-06", "section": "equityhub-iwm",        "path": "/equityhub?sym=IWM"},
+    {"id": 7,  "agent": "sg-agent-07", "section": "equityhub-vix",        "path": "/equityhub?sym=VIX"},
+    {"id": 8,  "agent": "sg-agent-08", "section": "equityhub-nvda",       "path": "/equityhub?sym=NVDA"},
+    {"id": 9,  "agent": "sg-agent-09", "section": "equityhub-tsla",       "path": "/equityhub?sym=TSLA"},
+    {"id": 10, "agent": "sg-agent-10", "section": "hiro-spx",             "path": "/hiro?sym=SPX"},
+    {"id": 11, "agent": "sg-agent-11", "section": "hiro-spy",             "path": "/hiro?sym=SPY"},
+    {"id": 12, "agent": "sg-agent-12", "section": "hiro-qqq",             "path": "/hiro?sym=QQQ"},
+    {"id": 13, "agent": "sg-agent-13", "section": "trace",                "path": "/trace"},
+    {"id": 14, "agent": "sg-agent-14", "section": "tape",                 "path": "/tape"},
+    {"id": 15, "agent": "sg-agent-15", "section": "volatility-dashboard", "path": "/ivol"},
+    {"id": 16, "agent": "sg-agent-16", "section": "scanners",             "path": "/scanners"},
+    {"id": 17, "agent": "sg-agent-17", "section": "founders-notes",       "path": "/foundersNotes"},
+    {"id": 18, "agent": "sg-agent-18", "section": "reports",              "path": "/reports"},
+    {"id": 19, "agent": "sg-agent-19", "section": "indices",              "path": "/indices"},
+    {"id": 20, "agent": "sg-agent-20", "section": "options-calculator",   "path": "/optionsCalculator"}
+  ]
+}

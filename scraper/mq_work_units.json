@@ -1,0 +1,28 @@
+{
+  "gateway": "https://gateway.menthorq.io",
+  "core_index": ["SPX", "SPY", "QQQ", "NDX", "IWM", "RUT", "DIA", "VIX"],
+  "core_stocks_a": ["NVDA", "TSLA", "AAPL", "MSFT", "AMZN", "META"],
+  "core_stocks_b": ["GOOGL", "AVGO", "AMD", "PLTR", "NFLX", "COIN"],
+  "units": [
+    {"id": 1, "key": "universe-tickers", "desc": "Full ticker universe: GET clickhouse-api /api/web/v1/tickers — save raw, then upsert EVERY entry into the tickers table via mq_db.upsert_ticker"},
+    {"id": 2, "key": "market-status", "desc": "GET clickhouse-api /api/web/v1/market-status/{exchange} for: NYSE, NASDAQ, CME, CBOT, NYMEX, COMEX, CBOE, ICE, BINANCE, COINBASE, OANDA. Save every response (even 4xx)."},
+    {"id": 3, "key": "prices-index", "desc": "GET clickhouse-api /api/web/v1/prices?tickers=SPX,SPY,QQQ,NDX,IWM,RUT,DIA,VIX (one batched call; if it fails, per-ticker calls)."},
+    {"id": 4, "key": "prices-stocks", "desc": "GET clickhouse-api /api/web/v1/prices?tickers=NVDA,TSLA,AAPL,MSFT,AMZN,META,GOOGL,AVGO,AMD,PLTR,NFLX,COIN (batched; fallback per-ticker)."},
+    {"id": 5, "key": "screener-catalog", "desc": "GET clickhouse-api /api/web/v1/screeners/columns; GET clickhouse-api /api/web/v1/screeners?columns=name,quote_type,sector,industry,market_cap,volume&tickers=SPX,SPY,QQQ,NVDA,TSLA,AAPL,MSFT,AMZN,META,GOOGL; GET chat-service /api/web/v1/screeners."},
+    {"id": 6, "key": "gamma-levels-index-eod", "desc": "GET clickhouse-api /api/web/v1/gamma-levels/{t}/eod for t in SPX,SPY,QQQ,NDX,IWM,RUT,DIA,VIX."},
+    {"id": 7, "key": "gamma-levels-index-intraday", "desc": "GET clickhouse-api /api/web/v1/gamma-levels/{t}/intraday for t in SPX,SPY,QQQ,NDX,IWM,RUT,DIA,VIX (4xx is fine, save it)."},
+    {"id": 8, "key": "gamma-levels-stocks-a", "desc": "GET clickhouse-api /api/web/v1/gamma-levels/{t}/eod AND /intraday for t in NVDA,TSLA,AAPL,MSFT,AMZN,META."},
+    {"id": 9, "key": "gamma-levels-stocks-b", "desc": "GET clickhouse-api /api/web/v1/gamma-levels/{t}/eod AND /intraday for t in GOOGL,AVGO,AMD,PLTR,NFLX,COIN."},
+    {"id": 10, "key": "gamma-insights-index", "desc": "For t in SPX,SPY,QQQ,NDX,IWM,VIX: GET clickhouse-api /api/web/v1/gamma-insights/{t}?limit=20 AND /api/web/v1/gamma-insights/{t}/expirations?frequency=eod."},
+    {"id": 11, "key": "gamma-insights-stocks", "desc": "For t in NVDA,TSLA,AAPL,MSFT,AMZN,META: GET clickhouse-api /api/web/v1/gamma-insights/{t}?limit=20 AND /api/web/v1/gamma-insights/{t}/expirations?frequency=eod."},
+    {"id": 12, "key": "metrics-index", "desc": "For t in SPX,SPY,QQQ,NDX,IWM,RUT,DIA,VIX: GET clickhouse-api /api/web/v1/metrics/{t}/eod?fields=option&fields=momentum&fields=volatility&fields=seasonality&limit=30."},
+    {"id": 13, "key": "metrics-stocks", "desc": "For t in NVDA,TSLA,AAPL,MSFT,AMZN,META,GOOGL,AVGO: GET clickhouse-api /api/web/v1/metrics/{t}/eod?fields=option&fields=momentum&fields=volatility&fields=seasonality&limit=30."},
+    {"id": 14, "key": "metrics-intraday-probe", "desc": "Probe: GET clickhouse-api /api/web/v1/metrics/{t}/intraday?fields=option&fields=volatility&limit=30 for SPX,SPY,QQQ,NVDA (save whatever comes back, incl. 4xx)."},
+    {"id": 15, "key": "options-matrix", "desc": "For t in SPX,SPY,QQQ,NVDA,TSLA,AAPL: GET clickhouse-api /api/web/v1/options/matrix/{t}?frequency=intraday AND ?frequency=eod."},
+    {"id": 16, "key": "options-putcall-dealer", "desc": "For t in SPX,SPY,QQQ,NVDA,TSLA,AAPL: GET clickhouse-api /api/web/v1/options/put-call-ratio/{t} AND /api/web/v1/dealer-positioning/{t} (probe, save all statuses)."},
+    {"id": 17, "key": "volatility-insights", "desc": "For t in SPX,SPY,QQQ,NDX,IWM,VIX,NVDA,TSLA: GET clickhouse-api /api/web/v1/volatility-insights/{t}. Also probe /api/web/v1/price-ratios?tickers=SPX,SPY and /api/web/v1/levels-report?ticker=SPX."},
+    {"id": 18, "key": "candles", "desc": "For t in SPX,SPY,QQQ,NVDA,TSLA: GET clickhouse-api /api/web/v1/tickers/{t}/candles?interval=5m&countBack=288 (add &from/&to ms epoch for last 24h if empty) AND ?interval=1d&countBack=60. Also GET /api/web/v1/tickers/SPX/tradingview."},
+    {"id": 19, "key": "qbot-news-events", "desc": "GET qbot-service /api/web/v1/assets. For t in SPX,SPY,QQQ,NVDA,TSLA,AAPL: /api/web/v1/events?ticker={t}&kind=news_significant&start_date=<14 days ago>&end_date=<today> AND /api/web/v1/company-news?ticker={t}&date=<today>&number=12."},
+    {"id": 20, "key": "user-chat-account", "desc": "GET user-service /api/web/v1/users/me, /api/web/v1/watchlists, /api/web/v1/user-preferences?type=tradingview. GET chat-service /api/web/v1/chat-context, /api/web/v1/chats, /api/web/v1/screener-templates, /api/web/v1/templates?type=suggested. THEN scrape 4 account-site HTML pages via WebBridge (see brief section B)."}
+  ]
+}

@@ -1,0 +1,76 @@
+# Secrets
+.env
+.env.*
+!.env.example
+sg_token.txt
+probes.json
+
+# Agent/planning workspace
+.superpowers/
+.venv/
+
+# Data & databases (never publish scraped premium data)
+*.db
+*.db-journal
+data/
+*.parquet
+*.arrow
+
+# Logs & runtime
+logs/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Node
+node_modules/
+
+# MCP local config (tokens, machine-specific paths)
+mcp/mcp.json
+mcp/mcp.json.backup
+spotgamma-mcp/.env
+spotgamma-mcp/.env.*
+spotgamma-mcp/*.log
+
+# Archived platform pages & research (kept local, ToS-sensitive)
+/home_*.html
+/quin_*.html
+/feature_*.html
+/landing_*.html
+/sunbiz-*.html
+/terms-of-use.*
+/cookie-policy.*
+/menthorq-legal-corporate-report.md
+/dossier/
+/quin_research/
+*-screenshots/
+/presentation-screenshots/
+/spotgamma_trader_deck_screenshot/
+
+# QUIN research (never publishes)
+/QUIN_dossier.md
+/QUIN_AI_Distillation.md
+/quin_menthorq_research.md
+
+# Third-party proprietary JS copies (not ours to publish)
+spotgamma-index.js
+spotgamma-polling-worker.js
+
+# Presentations are personal decks — keep local for now
+/presentation/
+/SpotGamma-for-Traders/
+/spotgamma_trader_deck/
+
+# Scraped JSON payloads (campaign data)
+scraper/a16_b*.json
+scraper/fsm_data.json
+scraper/*_payload_*.json
+scraper/skew_*.json
+scraper/ts_chart_raw.json
+scraper/vix_*.json
+scraper/tmp_*/
+
+# Generated artifacts
+spx_gamma_curve.png
+guide_*_body.txt
+home_2022_body.txt
