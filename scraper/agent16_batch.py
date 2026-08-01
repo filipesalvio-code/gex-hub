@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """sg-agent-16: fire select (ignore timeout), sleep, light capture."""
-import json, sys, time, urllib.request
+import json
+import sys
+import time
+import urllib.request
 
 DAEMON = "http://127.0.0.1:10086/command"
 SESSION = "spotgamma-scrape-16"

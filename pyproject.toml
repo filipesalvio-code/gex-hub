@@ -25,6 +25,19 @@ py-modules = ["gex_scraper", "positioning_artifact", "plot_spx_gamma"]
 
 [tool.ruff]
 line-length = 110
+extend-exclude = ["attic"]
+
+[tool.ruff.lint.per-file-ignores]
+# BLE001/S110: scraper probes intentionally swallow all exceptions — a failed
+# API call must not abort the batch run; narrowing exception types needs a
+# behavior review, deferred.
+"scraper/**" = ["BLE001", "S110", "SIM115"]
+"gex_scraper.py" = ["BLE001", "S110"]
+# BLE001/S110: token refresh helpers return (None, error) tuples by design;
+# SIM115: short-lived scripts where open() lifetime is process-scoped.
+"spotgamma-mcp/token_refresh.py" = ["BLE001", "S110"]
+"mcp/menthorq_mcp.py" = ["BLE001", "S110"]
+"mcp/test_all.py" = ["SIM115"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

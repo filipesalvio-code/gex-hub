@@ -1,8 +1,10 @@
 """mq-agent-10 work unit: gamma-insights-index."""
-import sys, time, json
+import sys
+import time
+
 sys.path.insert(0, 'scraper')
-from mq_db import start_run, save_response, save_endpoint, finish_run
 from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 SERVICE = 'clickhouse-api'
 TICKERS = ['SPX', 'SPY', 'QQQ', 'NDX', 'IWM', 'VIX']
@@ -48,6 +50,7 @@ print(f'FINISH {status} calls={calls} ok={ok}', flush=True)
 
 # verification
 from mq_db import _connect
+
 with _connect() as con:
     rows = con.execute(
         "SELECT http_status, LENGTH(payload_json) FROM raw_responses WHERE run_id=? ORDER BY id",

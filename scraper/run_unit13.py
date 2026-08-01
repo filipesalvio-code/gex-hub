@@ -1,8 +1,10 @@
 """Unit 13 - metrics-stocks: EOD metrics (option/momentum/volatility/seasonality) for 8 tickers."""
-import sys, time, json
+import sys
+import time
+
 sys.path.insert(0, 'scraper')
 from mq_api import get, path_of
-from mq_db import start_run, save_response, save_endpoint, finish_run
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 TICKERS = ["NVDA", "TSLA", "AAPL", "MSFT", "AMZN", "META", "GOOGL", "AVGO"]
 SERVICE = "clickhouse-api"

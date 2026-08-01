@@ -11,8 +11,8 @@ Usage:
 """
 import json
 import time
-import urllib.request
 import urllib.error
+import urllib.request
 
 BRIDGE = "http://127.0.0.1:10086/command"
 SESSION = "menthorq-scrape"
@@ -74,7 +74,7 @@ def get(service: str, path: str, retries: int = 3, timeout: int = 60):
                 time.sleep(2 * (attempt + 1))
                 continue
             return e.code, {"_error": body}
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             last_err = repr(e)
             time.sleep(2 * (attempt + 1))
     return 0, {"_error": f"failed after {retries} tries: {last_err}"}

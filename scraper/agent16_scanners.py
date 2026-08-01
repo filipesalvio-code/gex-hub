@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """sg-agent-16: iterate SpotGamma scanners, capture equity lists."""
-import json, time, urllib.request
+import json
+import urllib.request
 
 DAEMON = "http://127.0.0.1:10086/command"
 SESSION = "spotgamma-scrape-16"

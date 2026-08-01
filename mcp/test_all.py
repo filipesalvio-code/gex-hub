@@ -3,7 +3,6 @@
 command/args registered in Kimi's mcp.json (simulates what Kimi spawns)."""
 import json
 import subprocess
-import sys
 
 MCP_JSON = ("/Users/filipesalvio/Library/Application Support/kimi-desktop/"
             "daimon-share/daimon/runtime/kimi-code/home/mcp.json")

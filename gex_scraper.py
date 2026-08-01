@@ -34,7 +34,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 BASE_URL = "https://api.spotgamma.com"
 DASHBOARD_URL = "https://dashboard.spotgamma.com/home"
@@ -243,7 +243,7 @@ def fetch_json(path: str, token: str, timeout: float = 30.0) -> object:
 # ---------------------------------------------------------------------------
 
 def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def upsert_rows(conn: sqlite3.Connection, table: str, cols: list[str],

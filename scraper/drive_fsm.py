@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Scroll the Fixed Strike Matrix grid step by step, merging captured cells."""
 import json
-import re
 import sys
 
 sys.path.insert(0, "scraper")

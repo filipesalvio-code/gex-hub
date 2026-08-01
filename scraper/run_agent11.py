@@ -1,7 +1,10 @@
-import sys, time, json
+import json
+import sys
+import time
+
 sys.path.insert(0, 'scraper')
-from mq_db import start_run, save_response, save_endpoint, finish_run
 from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 run_id = start_run('mq-agent-11', 'gamma-insights-stocks')
 tickers = ['NVDA', 'TSLA', 'AAPL', 'MSFT', 'AMZN', 'META']

@@ -9,8 +9,8 @@ import sys
 import time
 
 sys.path.insert(0, 'scraper')
-from mq_db import start_run, save_response, save_endpoint, finish_run  # noqa: E402
-from mq_api import get, path_of  # noqa: E402
+from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 SERVICE = 'clickhouse-api'
 TICKERS = ['SPX', 'SPY', 'QQQ', 'NVDA']
@@ -57,7 +57,7 @@ def main():
     else:
         print('intraday not working for SPX; skipping momentum/seasonality probe', flush=True)
 
-    run_status = 'ok' if ok == calls else ('partial' if ok > 0 else 'partial')
+    run_status = 'ok' if ok == calls else 'partial'
     finish_run(run_id, run_status, f'calls={calls} ok={ok}')
     print(f'finished: calls={calls} ok={ok}', flush=True)
 

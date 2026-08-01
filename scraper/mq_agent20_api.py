@@ -1,9 +1,11 @@
 """mq-agent-20 section A: user-service + chat-service API scrape."""
-import sys, time, json
+import json
+import sys
+import time
 
 sys.path.insert(0, 'scraper')
-from mq_db import start_run, finish_run, save_response, save_endpoint
 from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 AGENT = 'mq-agent-20'
 UNIT = 'user-chat-account'

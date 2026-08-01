@@ -1,9 +1,12 @@
 """mq-agent-20 section B fix: reuse the session's vol tab (newTab:false) to
 load the 2 missing account pages, so evaluate can't land on the wrong tab."""
-import json, sys, time, urllib.request
+import json
+import sys
+import time
+import urllib.request
 
 sys.path.insert(0, 'scraper')
-from mq_db import save_response, finish_run
+from mq_db import finish_run, save_response
 
 RUN_ID = 23
 SESSION = "menthorq-scrape"

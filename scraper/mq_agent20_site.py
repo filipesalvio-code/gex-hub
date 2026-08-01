@@ -9,7 +9,7 @@ import time
 import urllib.request
 
 sys.path.insert(0, 'scraper')
-from mq_db import save_response, finish_run
+from mq_db import finish_run, save_response
 
 RUN_ID = 23
 SESSION = "menthorq-scrape"

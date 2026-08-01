@@ -118,7 +118,7 @@ def get_token(force: bool = False) -> str:
         token = _fetch_token_via_bridge()
     except RuntimeError:
         raise
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         raise RuntimeError(
             "Cannot reach Kimi WebBridge to obtain a MenthorQ token. Open "
             "dashboard.menthorq.io in Chrome (logged in) or set MENTHORQ_TOKEN. "
@@ -155,7 +155,7 @@ def api_get(service: str, path: str, timeout: int = 60):
                 return e.code, json.loads(text)
             except json.JSONDecodeError:
                 return e.code, {"error": text}
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             last = repr(e)
             time.sleep(2 * (attempt + 1))
     return 0, {"error": f"request failed after retries: {last}"}
@@ -334,7 +334,7 @@ def handle(req):
                             "isError": status == 0 or status >= 400})
         except KeyError:
             error(msg_id, -32602, f"unknown tool: {name}")
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             result(msg_id, {"content": [{"type": "text", "text": f"error: {e}"}],
                             "isError": True})
     elif method.startswith("notifications/"):

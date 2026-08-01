@@ -1,7 +1,9 @@
-import sys, time
+import sys
+import time
+
 sys.path.insert(0, 'scraper')
-from mq_db import start_run, finish_run, save_response, save_endpoint
 from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 TICKERS = ["SPX", "SPY", "QQQ", "NDX", "IWM", "RUT", "DIA", "VIX"]
 QS = "?fields=option&fields=momentum&fields=volatility&fields=seasonality&limit=30"

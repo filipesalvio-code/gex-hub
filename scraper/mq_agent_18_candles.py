@@ -4,8 +4,8 @@ import sys
 import time
 
 sys.path.insert(0, 'scraper')
-from mq_api import get, path_of          # noqa: E402
-from mq_db import start_run, save_response, save_endpoint, finish_run  # noqa: E402
+from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 TICKERS = ["SPX", "SPY", "QQQ", "NVDA", "TSLA"]
 
@@ -26,9 +26,7 @@ def needs_window(status, data):
             keys = set(data.keys())
             if not (keys & {"candles", "bars", "data", "t", "timestamps"}):
                 return True
-    if isinstance(data, list) and len(data) == 0:
-        return True
-    return False
+    return isinstance(data, list) and len(data) == 0
 
 
 def count_bars(data):

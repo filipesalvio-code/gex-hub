@@ -1,9 +1,10 @@
 """mq-agent-15 · unit 'options-matrix' — /api/web/v1/options/matrix/{ticker}?frequency=."""
-import sys, time, json
+import sys
+import time
 
 sys.path.insert(0, 'scraper')
-from mq_db import start_run, finish_run, save_response, save_endpoint
 from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 SERVICE = 'clickhouse-api'
 TEMPLATE = '/api/web/v1/options/matrix/{ticker}'
@@ -25,7 +26,7 @@ def describe(data):
             ncols = len(data[0]) if data and isinstance(data[0], (list, dict)) else 0
             return f"list rows={len(data)} cols~{ncols}"
         return f"type={type(data).__name__}"
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         return f"describe-error {e!r}"
 
 

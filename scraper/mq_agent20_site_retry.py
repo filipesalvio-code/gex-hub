@@ -1,9 +1,12 @@
 """mq-agent-20 section B retry: re-scrape the 2 pages whose first capture
 landed on the wrong tab. Poll evaluate until location.href matches."""
-import json, sys, time, urllib.request
+import json
+import sys
+import time
+import urllib.request
 
 sys.path.insert(0, 'scraper')
-from mq_db import save_response, finish_run
+from mq_db import finish_run, save_response
 
 RUN_ID = 23
 SESSION = "menthorq-scrape"

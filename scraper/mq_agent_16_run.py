@@ -1,7 +1,9 @@
-import sys, time
+import sys
+import time
+
 sys.path.insert(0, 'scraper')
-from mq_db import start_run, save_response, save_endpoint, finish_run
 from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 TICKERS = ["SPX", "SPY", "QQQ", "NVDA", "TSLA", "AAPL"]
 ENDPOINTS = [
@@ -40,7 +42,8 @@ finish_run(run_id, final, f'calls={calls} ok={ok}')
 print('FINAL', final, f'calls={calls} ok={ok}')
 
 # verify
-import sqlite3, json
+import sqlite3
+
 con = sqlite3.connect('menthorq.db')
 n = con.execute("SELECT COUNT(*) FROM raw_responses WHERE run_id=?", (run_id,)).fetchone()[0]
 print('raw_responses rows for run:', n)

@@ -5,7 +5,7 @@ scraped data lands in spotgamma.db with a consistent schema.
 """
 import json
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 DB_PATH = Path(__file__).resolve().parent.parent / "spotgamma.db"
@@ -18,7 +18,7 @@ def _connect() -> sqlite3.Connection:
 
 
 def utcnow() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def start_run(agent_name: str, source_url: str) -> int:

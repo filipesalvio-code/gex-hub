@@ -3,8 +3,8 @@ import sys
 import time
 
 sys.path.insert(0, 'scraper')
-from mq_db import start_run, save_response, save_endpoint, finish_run
 from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 TICKERS = ["SPX", "SPY", "QQQ", "NDX", "IWM", "RUT", "DIA", "VIX"]
 SERVICE = "clickhouse-api"
@@ -39,7 +39,9 @@ final = 'ok' if ok == calls else ('partial' if ok > 0 else 'blocked')
 finish_run(run_id, final, f"calls={calls} ok={ok} statuses={','.join(statuses)}")
 
 # verify
-import sqlite3, json
+import json
+import sqlite3
+
 con = sqlite3.connect('menthorq.db')
 rows = con.execute("SELECT http_status, length(payload_json), payload_json FROM raw_responses WHERE run_id=?", (run_id,)).fetchall()
 print("run_id:", run_id)

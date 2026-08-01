@@ -1,6 +1,7 @@
 import sys
+
 sys.path.insert(0, 'scraper')
-from db_writer import save_snapshot, finish_run
+from db_writer import finish_run, save_snapshot
 
 spy_greeks = {
   "url": "https://dashboard.spotgamma.com/indices?sym=SPY", "title": "SPY Indices - SpotGamma",

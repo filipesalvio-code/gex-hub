@@ -14,7 +14,7 @@ import glob
 import os
 import re
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 WORKSPACE = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(WORKSPACE, "gex_data.db")
@@ -113,7 +113,7 @@ def build_artifact(db_path: str = DB_PATH) -> dict:
     positioning, oi_date = _positioning(spot) if spot else ({"strikes": [], "mm": [], "cust": []}, None)
 
     return {
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "oi_date": oi_date,
         "regime": regime,
         "walls": walls,

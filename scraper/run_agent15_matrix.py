@@ -1,8 +1,10 @@
 """mq-agent-15 work unit: options-matrix."""
-import sys, time, json
+import sys
+import time
+
 sys.path.insert(0, 'scraper')
-from mq_db import start_run, finish_run, save_response, save_endpoint
 from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 TICKERS = ["SPX", "SPY", "QQQ", "NVDA", "TSLA", "AAPL"]
 FREQS = ["intraday", "eod"]

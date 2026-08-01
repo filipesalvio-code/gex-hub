@@ -3,8 +3,8 @@ import sys
 import time
 
 sys.path.insert(0, 'scraper')
-from mq_db import start_run, save_response, save_endpoint, finish_run
 from mq_api import get, path_of
+from mq_db import finish_run, save_endpoint, save_response, start_run
 
 SVC = 'clickhouse-api'
 run_id = start_run('mq-agent-17', 'volatility-insights')

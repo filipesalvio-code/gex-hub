@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "mcp"))
-import menthorq_mcp  # noqa: E402
+import menthorq_mcp
 
 DB = ROOT / "menthorq.db"
 OUT = ROOT / "mcp" / "MCP_DOCS.md"
@@ -51,9 +51,7 @@ def redact_strings(obj, keep_keys=(), redact_keys=None):
     if isinstance(obj, dict):
         out = {}
         for k, v in obj.items():
-            if redact_keys and k in redact_keys:
-                out[k] = "«redacted»"
-            elif isinstance(v, str) and k not in keep_keys:
+            if redact_keys and k in redact_keys or isinstance(v, str) and k not in keep_keys:
                 out[k] = "«redacted»"
             else:
                 out[k] = redact_strings(v, keep_keys, redact_keys)

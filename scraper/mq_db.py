@@ -5,7 +5,7 @@ Agents must use these helpers instead of writing SQL themselves.
 """
 import json
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 DB_PATH = Path(__file__).resolve().parent.parent / "menthorq.db"
@@ -72,7 +72,7 @@ def init_db() -> None:
 
 
 def utcnow() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def start_run(agent_name: str, unit_key: str) -> int:
