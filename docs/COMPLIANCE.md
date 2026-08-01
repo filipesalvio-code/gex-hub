@@ -121,7 +121,7 @@ Task 3 implements `.gitignore`; this list is what it is checked against.
 | `QUIN_dossier.md`, `QUIN_AI_Distillation.md`, `quin_menthorq_research.md`, `dossier/`, `quin_research/` | QUIN research (owner ruling: never publishes) |
 | `terms-of-use.*`, `cookie-policy.*`, `menthorq-legal-corporate-report.md` | Platform legal documents / legal research — kept local, quoted here by reference |
 | `spotgamma-index.js`, `spotgamma-polling-worker.js` | Verbatim copies of SpotGamma's proprietary JS bundle — third-party code, not ours to publish |
-| `scraper/` raw payload JSONs (`a16_b*`, `*_payload_*`, `skew_*`, `ts_chart_raw`, `vix_*`, `fsm_data`) and `scraper/tmp_*/` scratch dirs | Scraped platform data from campaigns; `mq_work_units.json`/`work_units.json` are tooling and stay publishable |
+| `scraper/` raw payload JSONs (`a16_b*`, `*_payload_*`, `skew_*`, `ts_chart_raw`, `vix_*`, `fsm_data`) and `scraper/tmp_*` scratch files/dirs | Scraped platform data from campaigns; `mq_work_units.json`/`work_units.json` are tooling and stay publishable |
 | `__pycache__/`, `*.pyc` | Build artifacts |
 
 Notes:

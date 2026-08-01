@@ -68,7 +68,7 @@ scraper/*_payload_*.json
 scraper/skew_*.json
 scraper/ts_chart_raw.json
 scraper/vix_*.json
-scraper/tmp_*/
+scraper/tmp_*
 
 # Generated artifacts
 spx_gamma_curve.png
