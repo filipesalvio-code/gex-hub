@@ -31,13 +31,17 @@ extend-exclude = ["attic"]
 # BLE001/S110: scraper probes intentionally swallow all exceptions — a failed
 # API call must not abort the batch run; narrowing exception types needs a
 # behavior review, deferred.
-"scraper/**" = ["BLE001", "S110", "SIM115"]
+# E701/E702: one-liner style in throwaway probe scripts; E402: sys.path
+# bootstrapping before imports is intentional in these scripts.
+"scraper/**" = ["BLE001", "S110", "SIM115", "E701", "E702", "E402"]
 "gex_scraper.py" = ["BLE001", "S110"]
 # BLE001/S110: token refresh helpers return (None, error) tuples by design;
 # SIM115: short-lived scripts where open() lifetime is process-scoped.
 "spotgamma-mcp/token_refresh.py" = ["BLE001", "S110"]
 "mcp/menthorq_mcp.py" = ["BLE001", "S110"]
 "mcp/test_all.py" = ["SIM115"]
+# E402: sys.path bootstrapping before importing menthorq_mcp is intentional.
+"mcp/gen_docs.py" = ["E402"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
