@@ -200,6 +200,7 @@ PPTX **only** via the editor's export button (never CLI). Validate after edits:
 
 ## Status snapshot — 2026-07-25
 
+- Public repo: https://github.com/filipesalvio-code/gex-hub
 - MenthorQ: scrape archived (20-unit campaign), MCP registered + guard-protected,
   docs generated, trader deck delivered. All 24 tools pass (25/25).
 - SpotGamma: MCP registered (public tier until next token capture), token
