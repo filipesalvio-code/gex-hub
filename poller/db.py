@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS key_levels (
 CREATE TABLE IF NOT EXISTS put_call_ratio (
   ticker TEXT NOT NULL, ts TEXT NOT NULL,
   volume_calls REAL, volume_puts REAL, ratio REAL,
-  payload TEXT NOT NULL, captured_at TEXT NOT NULL, source TEXT NOT NULL,
-  UNIQUE (ticker, ts)
+   payload TEXT NOT NULL, captured_at TEXT NOT NULL, source TEXT NOT NULL,
+   UNIQUE (ticker, ts, source)
 );
 CREATE TABLE IF NOT EXISTS compass (
   ticker TEXT NOT NULL, ts TEXT NOT NULL,
@@ -61,21 +61,24 @@ def init_db(path: str | Path) -> sqlite3.Connection:
 
 
 def begin_cycle(conn: sqlite3.Connection, source: str) -> int:
-    conn.execute(
+    row = conn.execute(
         "INSERT INTO scrape_runs (cycle_id, source, tool, started_at) "
-        "VALUES ((SELECT COALESCE(MAX(cycle_id),0)+1 FROM scrape_runs), ?, NULL, ?)",
-        (source, _utcnow()))
+        "VALUES ((SELECT COALESCE(MAX(cycle_id),0)+1 FROM scrape_runs), ?, NULL, ?) "
+        "RETURNING cycle_id",
+        (source, _utcnow())).fetchone()
     conn.commit()
-    return conn.execute("SELECT MAX(cycle_id) FROM scrape_runs").fetchone()[0]
+    return row[0]
 
 
 def record_call(conn, cycle_id: int, tool: str, http_status: int | None,
-                rows: int, error: str | None) -> None:
+                rows: int, error: str | None, source: str | None = None) -> None:
+    if source is None:
+        source = "menthorq" if tool.startswith("menthorq_") else "spotgamma"
     now = _utcnow()
     conn.execute(
         "INSERT INTO scrape_runs (cycle_id, source, tool, started_at, finished_at,"
         " http_status, rows_written, error) VALUES (?,?,?,?,?,?,?,?)",
-        (cycle_id, "", tool, now, now, http_status, rows, error))
+        (cycle_id, source, tool, now, now, http_status, rows, error))
     conn.commit()
 
 

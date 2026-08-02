@@ -38,6 +38,12 @@ def _first(d: dict, *keys: str):
     return next((d[k] for k in keys if isinstance(d, dict) and d.get(k)), None)
 
 
+def _req(tool: str, d: dict, key: str):
+    if not isinstance(d, dict) or key not in d:
+        raise ValueError(f"{tool}: missing required field '{key}'")
+    return d[key]
+
+
 def _base(tool: str, ticker: str, ts: str, cap: str) -> dict:
     return {"tool": tool, "ticker": ticker or "", "ts": ts,
             "captured_at": cap, "source": _source(tool)}
@@ -51,12 +57,13 @@ def to_rows(tool: str, result: ToolResult, captured_at: str) -> tuple[str, list[
     src = _source(tool)
 
     if tool == "menthorq_gamma_levels":
-        row = {"ticker": d["ticker"], "frequency": d["frequency"], "ts": d["timestamp"],
+        row = {"ticker": _req(tool, d, "ticker"), "frequency": _req(tool, d, "frequency"),
+               "ts": _req(tool, d, "timestamp"),
                "gex_1": d.get("gex_1"), "gex_2": d.get("gex_2"), "gex_3": d.get("gex_3"),
                "payload": payload, "captured_at": captured_at, "source": src}
         return "gamma_levels", [row]
     if tool == "menthorq_dealer_positioning":
-        row = {"ticker": d.get("ticker", ""), "ts": d["reference_timestamp"],
+        row = {"ticker": d.get("ticker", ""), "ts": _req(tool, d, "reference_timestamp"),
                "net_gex": d.get("net_gex"), "net_dex": d.get("net_dex"),
                "gex_dte_0_7d": d.get("gex_dte_0_7d"), "gex_dte_8_30d": d.get("gex_dte_8_30d"),
                "gex_dte_over_30d": d.get("gex_dte_over_30d"),

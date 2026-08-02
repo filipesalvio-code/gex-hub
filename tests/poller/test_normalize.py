@@ -62,3 +62,34 @@ def test_failed_result_raises():
     r = parse_tool_text("menthorq_prices", _env({}, status=500))
     with pytest.raises(ValueError):
         to_rows("menthorq_prices", r, CAP)
+
+
+def test_gamma_levels_missing_timestamp_raises_valueerror():
+    r = parse_tool_text("menthorq_gamma_levels", _env(
+        {"ticker": "SPX", "frequency": "eod", "gex_1": 7500}))
+    with pytest.raises(ValueError, match="missing required field 'timestamp'"):
+        to_rows("menthorq_gamma_levels", r, CAP)
+
+
+def test_gamma_levels_missing_frequency_raises_valueerror():
+    r = parse_tool_text("menthorq_gamma_levels", _env(
+        {"ticker": "SPX", "timestamp": "2026-08-01"}))
+    with pytest.raises(ValueError, match="missing required field 'frequency'"):
+        to_rows("menthorq_gamma_levels", r, CAP)
+
+
+def test_dealer_positioning_missing_reference_timestamp_raises_valueerror():
+    r = parse_tool_text("menthorq_dealer_positioning", _env(
+        {"ticker": "SPX", "net_gex": 1.0}))
+    with pytest.raises(ValueError, match="missing required field 'reference_timestamp'"):
+        to_rows("menthorq_dealer_positioning", r, CAP)
+
+
+def test_dealer_positioning_row_maps_optional_fields():
+    r = parse_tool_text("menthorq_dealer_positioning", _env(
+        {"ticker": "SPX", "reference_timestamp": "2026-08-01T00:00:00Z",
+         "net_gex": 1.5, "net_dex": -0.5}))
+    table, rows = to_rows("menthorq_dealer_positioning", r, CAP)
+    assert table == "dealer_positioning"
+    assert rows[0]["ts"] == "2026-08-01T00:00:00Z"
+    assert rows[0]["net_gex"] == 1.5 and rows[0]["gex_dte_0_7d"] is None
