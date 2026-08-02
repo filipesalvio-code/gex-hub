@@ -1,7 +1,9 @@
 """Minimal stdio JSON-RPC client for the gex-hub MCP servers."""
 import json
+import queue
 import subprocess
 import sys
+import threading
 from typing import Self
 
 from poller.normalize import ToolResult, parse_tool_text
@@ -17,9 +19,12 @@ class McpError(Exception):
 
 
 class McpClient:
-    def __init__(self, argv: list[str], cwd: str | None = None):
+    def __init__(self, argv: list[str], cwd: str | None = None,
+                 read_timeout: float = 60.0):
         self._argv, self._cwd = argv, cwd
+        self._read_timeout = read_timeout
         self._proc: subprocess.Popen | None = None
+        self._lines: queue.Queue[str | None] = queue.Queue()
         self._next_id = 0
 
     def __enter__(self) -> Self:
@@ -29,15 +34,40 @@ class McpClient:
                 stderr=subprocess.DEVNULL, text=True, cwd=self._cwd)
         except OSError as e:
             raise McpError(f"spawn failed: {e}") from e
-        self._rpc("initialize", {"protocolVersion": _PROTOCOL, "capabilities": {},
-                                 "clientInfo": {"name": "gex-poller", "version": "0.1"}})
-        self._rpc("notifications/initialized", is_notification=True)
+        threading.Thread(target=self._pump, daemon=True).start()
+        try:
+            self._rpc("initialize", {"protocolVersion": _PROTOCOL, "capabilities": {},
+                                     "clientInfo": {"name": "gex-poller", "version": "0.1"}})
+            self._rpc("notifications/initialized", is_notification=True)
+        except Exception:
+            self._kill()
+            raise
         return self
 
     def __exit__(self, *exc) -> None:
-        if self._proc:
+        self._kill()
+
+    def _kill(self) -> None:
+        if self._proc and self._proc.poll() is None:
             self._proc.kill()
+        if self._proc:
             self._proc.wait()
+
+    def _pump(self) -> None:
+        assert self._proc and self._proc.stdout
+        for line in self._proc.stdout:
+            self._lines.put(line)
+        self._lines.put(None)
+
+    def _readline(self) -> str:
+        try:
+            line = self._lines.get(timeout=self._read_timeout)
+        except queue.Empty:
+            self._kill()
+            raise McpError(f"read timeout after {self._read_timeout}s") from None
+        if line is None:
+            raise McpError("server closed stdout")
+        return line
 
     def _rpc(self, method: str, params: dict | None = None,
              is_notification: bool = False) -> dict:
@@ -54,10 +84,7 @@ class McpClient:
         self._proc.stdin.flush()
         if is_notification:
             return {}
-        line = self._proc.stdout.readline()
-        if not line:
-            raise McpError("server closed stdout")
-        return json.loads(line)
+        return json.loads(self._readline())
 
     def call_tool(self, name: str, arguments: dict) -> ToolResult:
         r = self._rpc("tools/call", {"name": name, "arguments": arguments})
