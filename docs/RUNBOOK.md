@@ -162,3 +162,15 @@ plain files in this workspace — delete or keep.
 5. **Weekend captures freeze at Friday's close** — recorded honestly in
    payloads (`market_state`, `chart_only`, `scanner_empty`); don't mistake
    them for live data.
+
+## gex-poller
+
+Install:  `cp poller/com.gexhub.poller.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.gexhub.poller.plist`
+Remove:   `launchctl unload ~/Library/LaunchAgents/com.gexhub.poller.plist`
+One shot: `.venv/bin/python3 -m poller.poll --once`
+Status:   `.venv/bin/python3 -m poller.status`
+Logs:     `logs/poller.jsonl` (cycles), `logs/launchagent.log` (stdout/stderr)
+
+The plist runs the repo venv python (`/Users/filipesalvio/gex-hub/.venv/bin/python3`)
+directly, not `/usr/bin/env python3` — system python3 is 3.9 and the poller
+requires 3.11+.

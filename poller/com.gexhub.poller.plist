@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.gexhub.poller</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/filipesalvio/gex-hub/.venv/bin/python3</string>
+    <string>-m</string>
+    <string>poller.poll</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/filipesalvio/gex-hub</string>
+  <key>StartInterval</key><integer>900</integer>
+  <key>StandardOutPath</key><string>/Users/filipesalvio/gex-hub/logs/launchagent.log</string>
+  <key>StandardErrorPath</key><string>/Users/filipesalvio/gex-hub/logs/launchagent.log</string>
+</dict>
+</plist>
