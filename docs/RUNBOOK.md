@@ -176,7 +176,7 @@ directly, not `/usr/bin/env python3` — system python3 is 3.9 and the poller
 requires 3.11+.
 
 The LaunchAgent sets no `EnvironmentVariables` and launchd does not source
-shell profiles, so SpotGamma gated endpoints (`key_levels`, `compass`, …) need
+shell profiles, so SpotGamma gated endpoints (e.g. v1/me/*, v4/*) need
 the token injected separately. After installing the plist, run:
 
 ```
