@@ -1,5 +1,6 @@
 """One polling cycle: call core MCP tools, normalize, store, audit."""
 import argparse
+import sqlite3
 import sys
 from datetime import UTC, datetime
 
@@ -38,7 +39,7 @@ def run_cycle(clients: dict[str, McpClient], conn, logger: JsonlLogger,
             written = insert_rows(conn, table, rows)
             record_call(conn, cid, tool, result.http_status, written, None)
             rows_total += written
-        except (McpError, ValueError, KeyError) as e:
+        except (McpError, ValueError, KeyError, sqlite3.Error) as e:
             errors += 1
             record_call(conn, cid, tool, None, 0, str(e)[:300])
     finish_cycle(conn, cid)

@@ -1,8 +1,10 @@
 import json
+import sqlite3
 from datetime import UTC, datetime
 
 import pytest
 
+import poller.poll
 from poller.db import init_db
 from poller.observe import JsonlLogger
 from poller.poll import CAPTURE, run_cycle
@@ -56,3 +58,25 @@ def test_run_cycle_records_errors_and_continues(fake_mcp, tmp_path):
     assert rep["errors"] == 1
     errs = conn.execute("SELECT COUNT(*) FROM scrape_runs WHERE error IS NOT NULL").fetchone()[0]
     assert errs == 1
+
+
+def test_run_cycle_survives_sqlite_error(fake_mcp, tmp_path, monkeypatch):
+    real_insert = poller.poll.insert_rows
+    state = {"failed": False}
+
+    def flaky_insert(conn, table, rows):
+        if not state["failed"]:
+            state["failed"] = True
+            raise sqlite3.OperationalError("database is locked")
+        return real_insert(conn, table, rows)
+
+    monkeypatch.setattr(poller.poll, "insert_rows", flaky_insert)
+    conn = init_db(tmp_path / "t.db")
+    with fake_mcp(FIX) as m, fake_mcp(FIX) as sg:
+        rep = run_cycle({"m": m, "sg": sg}, conn,
+                        JsonlLogger(tmp_path / "l.jsonl"), now=NOW)
+    assert rep["calls"] == len(CAPTURE) and rep["errors"] == 1
+    errs = conn.execute("SELECT COUNT(*) FROM scrape_runs WHERE error IS NOT NULL").fetchone()[0]
+    assert errs == 1
+    marker = conn.execute("SELECT finished_at FROM scrape_runs WHERE tool IS NULL").fetchone()
+    assert marker[0] is not None
