@@ -81,6 +81,17 @@ def test_init_db_fails_on_old_sqlite(monkeypatch):
         init_db(":memory:")
 
 
+def test_insert_rows_rejects_unknown_table():
+    conn = init_db(":memory:")
+    with pytest.raises(ValueError, match="unknown table"):
+        insert_rows(conn, "scrape_runs", [{"a": 1}])
+
+
+def test_insert_rows_empty_returns_zero():
+    conn = init_db(":memory:")
+    assert insert_rows(conn, "gamma_levels", []) == 0
+
+
 _OLD_PCR_SCHEMA = """
 CREATE TABLE put_call_ratio (
   ticker TEXT NOT NULL, ts TEXT NOT NULL,

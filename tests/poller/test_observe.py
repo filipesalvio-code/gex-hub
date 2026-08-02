@@ -28,6 +28,13 @@ def test_failure_streak(tmp_path):
     assert failure_streak(conn) == 2
 
 
+def test_failure_streak_all_cycles_failed_exhausts_loop(tmp_path):
+    conn = init_db(tmp_path / "t.db")
+    c1 = begin_cycle(conn, "m"); record_call(conn, c1, "t", None, 0, "boom")
+    c2 = begin_cycle(conn, "m"); record_call(conn, c2, "t", 500, 0, "err")
+    assert failure_streak(conn) == 2
+
+
 def test_notify_macos_uses_runner():
     calls = []
     notify_macos("t", "m", runner=lambda *a, **k: calls.append(a[0]))
@@ -73,6 +80,16 @@ def _insert_cycle(conn, cycle_id, started_at, finished_at=None):
         "INSERT INTO scrape_runs (cycle_id, source, tool, started_at, finished_at)"
         " VALUES (?,?,?,?,?)", (cycle_id, "m", "t", started_at, finished_at or started_at))
     conn.commit()
+
+
+def test_status_report_unparseable_timestamp_marks_stale(tmp_path):
+    conn = init_db(tmp_path / "t.db")
+    conn.execute(
+        "INSERT INTO scrape_runs (cycle_id, source, tool, started_at, finished_at)"
+        " VALUES (1, 'm', 't', '2026-08-01T14:00:00+00:00', 'not-a-timestamp')")
+    conn.commit()
+    rep = status_report(conn)
+    assert rep["freshness"]["t"] == 24 * 60
 
 
 def test_status_report_24h_window_boundary(tmp_path):

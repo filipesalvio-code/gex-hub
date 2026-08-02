@@ -116,6 +116,40 @@ def test_dealer_positioning_blank_ticker_raises_valueerror():
         to_rows("menthorq_dealer_positioning", r, CAP)
 
 
+def test_put_call_ratio_menthorq_row():
+    r = parse_tool_text("menthorq_put_call_ratio", _env(
+        {"ticker": "SPX", "timestamp": "2026-08-01",
+         "volume_calls": 1e6, "volume_puts": 9e5, "put_call_ratio": 0.9}))
+    table, rows = to_rows("menthorq_put_call_ratio", r, CAP)
+    assert table == "put_call_ratio"
+    assert rows[0]["ticker"] == "SPX" and rows[0]["ratio"] == 0.9
+    assert rows[0]["source"] == "menthorq"
+
+
+def test_put_call_ratio_spotgamma_uses_sym_fallback():
+    r = parse_tool_text("spotgamma_equity_put_call_ratio",
+                        json.dumps({"sym": "SPY", "timestamp": "2026-08-01",
+                                    "put_call_ratio": 1.1}))
+    table, rows = to_rows("spotgamma_equity_put_call_ratio", r, CAP)
+    assert table == "put_call_ratio"
+    assert rows[0]["ticker"] == "SPY" and rows[0]["source"] == "spotgamma"
+
+
+def test_compass_row_from_dict():
+    r = parse_tool_text("spotgamma_compass", json.dumps(
+        {"ticker": "SPX", "date": "2026-07-31", "compass": 0.42}))
+    table, rows = to_rows("spotgamma_compass", r, CAP)
+    assert table == "compass"
+    assert rows[0]["ticker"] == "SPX" and rows[0]["ts"] == "2026-07-31"
+
+
+def test_compass_non_dict_defaults():
+    r = parse_tool_text("spotgamma_compass", json.dumps([1, 2, 3]))
+    table, rows = to_rows("spotgamma_compass", r, CAP)
+    assert table == "compass"
+    assert rows[0]["ticker"] == "SPX" and rows[0]["ts"] == CAP
+
+
 def test_gamma_levels_null_timestamp_raises_valueerror():
     r = parse_tool_text("menthorq_gamma_levels", _env(
         {"ticker": "SPX", "frequency": "eod", "timestamp": None}))
