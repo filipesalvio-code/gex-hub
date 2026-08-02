@@ -174,3 +174,14 @@ Logs:     `logs/poller.jsonl` (cycles), `logs/launchagent.log` (stdout/stderr)
 The plist runs the repo venv python (`/Users/filipesalvio/gex-hub/.venv/bin/python3`)
 directly, not `/usr/bin/env python3` — system python3 is 3.9 and the poller
 requires 3.11+.
+
+The LaunchAgent sets no `EnvironmentVariables` and launchd does not source
+shell profiles, so SpotGamma gated endpoints (`key_levels`, `compass`, …) need
+the token injected separately. After installing the plist, run:
+
+```
+launchctl setenv SG_TOKEN <token>
+```
+
+(`SPOTGAMMA_SG_TOKEN` is also honored by the server.) The token must never go
+into the plist or any committed file — this is a public repo.

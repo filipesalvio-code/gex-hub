@@ -33,6 +33,7 @@ FIX = {
     "spotgamma_equity_put_call_ratio": json.dumps({
         "timestamp": "2026-07-31", "volume_calls": 1, "volume_puts": 2, "put_call_ratio": 2.0}),
     "spotgamma_zero_dte": '[{"sym": "SPX", "date": "2026-07-31"}]',
+    "spotgamma_compass": json.dumps({"ticker": "SPX", "date": "2026-08-03", "compass": 0.42}),
 }
 
 NOW = datetime(2026, 8, 3, 16, 0, tzinfo=UTC)
@@ -45,7 +46,7 @@ def test_run_cycle_writes_all_families(fake_mcp, tmp_path):
                         JsonlLogger(tmp_path / "l.jsonl"), now=NOW)
     assert rep["errors"] == 0 and rep["calls"] == len(CAPTURE)
     for t in ("gamma_levels", "dealer_positioning", "key_levels",
-              "put_call_ratio", "snapshots"):
+              "put_call_ratio", "compass", "snapshots"):
         assert conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] >= 1
 
 
@@ -58,6 +59,24 @@ def test_run_cycle_records_errors_and_continues(fake_mcp, tmp_path):
     assert rep["errors"] == 1
     errs = conn.execute("SELECT COUNT(*) FROM scrape_runs WHERE error IS NOT NULL").fetchone()[0]
     assert errs == 1
+
+
+def test_run_cycle_survives_broken_pipe(fake_mcp, tmp_path, monkeypatch):
+    conn = init_db(tmp_path / "t.db")
+    with fake_mcp(FIX) as m, fake_mcp(FIX) as sg:
+        real = m.call_tool
+        state = {"failed": False}
+
+        def boom(tool, args):
+            if tool == "menthorq_gamma_levels" and not state["failed"]:
+                state["failed"] = True
+                raise BrokenPipeError("server died mid-write")
+            return real(tool, args)
+
+        monkeypatch.setattr(m, "call_tool", boom)
+        rep = run_cycle({"m": m, "sg": sg}, conn,
+                        JsonlLogger(tmp_path / "l.jsonl"), now=NOW)
+    assert rep["calls"] == len(CAPTURE) and rep["errors"] == 1
 
 
 def test_run_cycle_survives_sqlite_error(fake_mcp, tmp_path, monkeypatch):

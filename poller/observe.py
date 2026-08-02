@@ -55,7 +55,7 @@ def status_report(conn: sqlite3.Connection) -> dict:
         "SELECT cycle_id, MAX(error IS NOT NULL) AS failed, MAX(finished_at) AS done"
         " FROM scrape_runs WHERE tool IS NOT NULL"
         " AND julianday(started_at) >= julianday('now', '-1 day')"
-        " GROUP BY cycle_id").fetchall()
+        " GROUP BY cycle_id ORDER BY cycle_id DESC").fetchall()
     fresh = {}
     for row in conn.execute(
             "SELECT tool, MAX(finished_at) AS last_ok FROM scrape_runs"

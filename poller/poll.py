@@ -20,6 +20,7 @@ CAPTURE = [
                                         "fields": ["iv_1m_50d", "skew_1m"], "limit": 3}),
     ("sg", "spotgamma_most_recent_market_open", {}),
     ("sg", "spotgamma_key_levels", {"include_gamma_curve": False}),
+    ("sg", "spotgamma_compass", {}),
     ("sg", "spotgamma_equity_put_call_ratio", {}),
     ("sg", "spotgamma_zero_dte", {}),
 ]
@@ -39,7 +40,7 @@ def run_cycle(clients: dict[str, McpClient], conn, logger: JsonlLogger,
             written = insert_rows(conn, table, rows)
             record_call(conn, cid, tool, result.http_status, written, None)
             rows_total += written
-        except (McpError, ValueError, KeyError, sqlite3.Error) as e:
+        except (McpError, ValueError, KeyError, OSError, sqlite3.Error) as e:
             errors += 1
             record_call(conn, cid, tool, None, 0, str(e)[:300])
     finish_cycle(conn, cid)

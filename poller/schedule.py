@@ -1,5 +1,5 @@
-"""Market-hours gate (US equities, America/New_York). Holiday check happens at
-runtime via menthorq_market_status in poll.py."""
+"""Market-hours gate (US equities, America/New_York). No holiday check here —
+menthorq_market_status is captured as data only and does not gate the cycle."""
 from datetime import UTC, datetime, time
 from zoneinfo import ZoneInfo
 
