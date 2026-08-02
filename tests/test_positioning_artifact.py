@@ -1,7 +1,6 @@
-from tests.conftest import insert_key_level
-
 import gex_scraper
 import positioning_artifact
+from tests.conftest import insert_key_level
 
 
 def _make_db(tmp_path):
