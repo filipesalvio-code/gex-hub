@@ -12,6 +12,12 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - run: pytest -q
+      - name: Unit coverage gate (100%)
+        run: |
+          pytest -m unit --cov=poller.normalize --cov=poller.schedule \
+                 --cov=poller.db --cov=poller.observe --cov-fail-under=100 -q
+      - name: Integration coverage gate (80%)
+        run: pytest -m "unit or integration" --cov=poller --cov-fail-under=80 -q
   node:
     runs-on: ubuntu-latest
     steps:

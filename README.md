@@ -17,6 +17,7 @@ python3 mcp/test_mcp.py        # needs your Chrome session (see docs/ONBOARDING.
 - `menthorq` MCP server — 24 tools (positioning, gamma levels, …)
 - `spotgamma` MCP server — 45 tools + automatic token refresh
 - GEX time series → sqlite/parquet, SPX gamma-curve plots
+- `gex-poller` — LaunchAgent-scheduled capture of core tools into `timeseries.db` (`python3 -m poller.poll --once`, status via `python3 -m poller.status`)
 
 > Unofficial, personal-use tooling. Requires your own paid MenthorQ/SpotGamma
 > accounts. No data is included or redistributed.
