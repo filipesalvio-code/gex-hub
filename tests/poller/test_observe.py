@@ -1,4 +1,6 @@
 import json
+import subprocess
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -32,6 +34,31 @@ def test_notify_macos_uses_runner():
     assert calls and "osascript" in calls[0][0]
 
 
+def test_notify_macos_passes_values_as_argv_not_script():
+    calls = []
+    title = 'Bad "quoted" \\ title'
+    message = 'evil" & do shell script "rm -rf ~'
+    notify_macos(title, message, runner=lambda *a, **k: calls.append(a[0]))
+    argv = calls[0]
+    assert argv[0] == "osascript"
+    script = argv[argv.index("-e") + 1]
+    assert title not in script and message not in script
+    assert "on run argv" in script
+    assert title in argv and message in argv
+
+
+def test_notify_macos_timeout_is_swallowed():
+    def _boom(*a, **k):
+        raise subprocess.TimeoutExpired(cmd="osascript", timeout=10)
+    notify_macos("t", "m", runner=_boom)  # must not raise
+
+
+def test_notify_macos_timeout_kwarg():
+    calls = []
+    notify_macos("t", "m", runner=lambda *a, **k: calls.append(k))
+    assert calls[0].get("timeout") == 10
+
+
 def test_status_report_shape(tmp_path):
     conn = init_db(tmp_path / "t.db")
     c = begin_cycle(conn, "m"); record_call(conn, c, "menthorq_prices", 200, 3, None)
@@ -39,3 +66,24 @@ def test_status_report_shape(tmp_path):
     assert rep["cycles_24h"] == 1 and rep["failed_24h"] == 0
     assert "menthorq_prices" in rep["freshness"]
     assert rep["last_errors"] == []
+
+
+def _insert_cycle(conn, cycle_id, started_at, finished_at=None):
+    conn.execute(
+        "INSERT INTO scrape_runs (cycle_id, source, tool, started_at, finished_at)"
+        " VALUES (?,?,?,?,?)", (cycle_id, "m", "t", started_at, finished_at or started_at))
+    conn.commit()
+
+
+def test_status_report_24h_window_boundary(tmp_path):
+    conn = init_db(tmp_path / "t.db")
+    threshold = conn.execute("SELECT datetime('now', '-1 day')").fetchone()[0]
+    thr = datetime.strptime(threshold, "%Y-%m-%d %H:%M:%S").replace(tzinfo=UTC)
+    # same calendar date as threshold, 1 minute older: string compare ('T' > ' ')
+    # would wrongly include this row; julianday must exclude it
+    stale = (thr - timedelta(minutes=1)).isoformat()
+    fresh = (thr + timedelta(minutes=1)).isoformat()
+    _insert_cycle(conn, 1, stale)
+    _insert_cycle(conn, 2, fresh)
+    rep = status_report(conn)
+    assert rep["cycles_24h"] == 1 and rep["last_cycle"] == 2

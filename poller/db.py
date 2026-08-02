@@ -53,9 +53,38 @@ def _utcnow() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
 
+_PCR_NEW_SQL = """CREATE TABLE put_call_ratio (
+  ticker TEXT NOT NULL, ts TEXT NOT NULL,
+  volume_calls REAL, volume_puts REAL, ratio REAL,
+  payload TEXT NOT NULL, captured_at TEXT NOT NULL, source TEXT NOT NULL,
+  UNIQUE (ticker, ts, source)
+);"""
+
+
+def _migrate_put_call_ratio(conn: sqlite3.Connection) -> None:
+    row = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table'"
+        " AND name='put_call_ratio'").fetchone()
+    if row is None or "UNIQUE (ticker, ts, source)" in row[0]:
+        return
+    conn.executescript(
+        "ALTER TABLE put_call_ratio RENAME TO put_call_ratio_old;\n"
+        + _PCR_NEW_SQL + "\n"
+        "INSERT OR IGNORE INTO put_call_ratio"
+        " (ticker, ts, volume_calls, volume_puts, ratio, payload, captured_at, source)"
+        " SELECT ticker, ts, volume_calls, volume_puts, ratio, payload, captured_at, source"
+        " FROM put_call_ratio_old;\n"
+        "DROP TABLE put_call_ratio_old;")
+    conn.commit()
+
+
 def init_db(path: str | Path) -> sqlite3.Connection:
+    if sqlite3.sqlite_version_info < (3, 35, 0):
+        raise RuntimeError(
+            f"SQLite >= 3.35 required (RETURNING); got {sqlite3.sqlite_version}")
     conn = sqlite3.connect(str(path))
     conn.row_factory = sqlite3.Row
+    _migrate_put_call_ratio(conn)
     conn.executescript(_SCHEMA)
     return conn
 

@@ -36,8 +36,16 @@ class McpClient:
             raise McpError(f"spawn failed: {e}") from e
         threading.Thread(target=self._pump, daemon=True).start()
         try:
-            self._rpc("initialize", {"protocolVersion": _PROTOCOL, "capabilities": {},
-                                     "clientInfo": {"name": "gex-poller", "version": "0.1"}})
+            resp = self._rpc("initialize",
+                             {"protocolVersion": _PROTOCOL, "capabilities": {},
+                              "clientInfo": {"name": "gex-poller", "version": "0.1"}})
+            if "error" in resp:
+                raise McpError(f"initialize failed: {resp['error'].get('message')}")
+            negotiated = resp.get("result", {}).get("protocolVersion")
+            if negotiated != _PROTOCOL:
+                raise McpError(
+                    f"protocol mismatch: server negotiated {negotiated!r},"
+                    f" client requires {_PROTOCOL!r}")
             self._rpc("notifications/initialized", is_notification=True)
         except Exception:
             self._kill()
@@ -84,7 +92,14 @@ class McpClient:
         self._proc.stdin.flush()
         if is_notification:
             return {}
-        return json.loads(self._readline())
+        while True:
+            resp = json.loads(self._readline())
+            if "id" not in resp or "method" in resp:
+                continue  # server notification; not a response
+            if resp["id"] != self._next_id:
+                raise McpError(
+                    f"unexpected response id {resp['id']!r}, expected {self._next_id}")
+            return resp
 
     def call_tool(self, name: str, arguments: dict) -> ToolResult:
         r = self._rpc("tools/call", {"name": name, "arguments": arguments})

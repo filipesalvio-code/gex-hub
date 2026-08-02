@@ -93,3 +93,31 @@ def test_dealer_positioning_row_maps_optional_fields():
     assert table == "dealer_positioning"
     assert rows[0]["ts"] == "2026-08-01T00:00:00Z"
     assert rows[0]["net_gex"] == 1.5 and rows[0]["gex_dte_0_7d"] is None
+
+
+def test_dealer_positioning_null_ticker_raises_valueerror():
+    r = parse_tool_text("menthorq_dealer_positioning", _env(
+        {"ticker": None, "reference_timestamp": "2026-08-01T00:00:00Z"}))
+    with pytest.raises(ValueError, match="ticker"):
+        to_rows("menthorq_dealer_positioning", r, CAP)
+
+
+def test_dealer_positioning_missing_ticker_raises_valueerror():
+    r = parse_tool_text("menthorq_dealer_positioning", _env(
+        {"reference_timestamp": "2026-08-01T00:00:00Z"}))
+    with pytest.raises(ValueError, match="ticker"):
+        to_rows("menthorq_dealer_positioning", r, CAP)
+
+
+def test_dealer_positioning_blank_ticker_raises_valueerror():
+    r = parse_tool_text("menthorq_dealer_positioning", _env(
+        {"ticker": "  ", "reference_timestamp": "2026-08-01T00:00:00Z"}))
+    with pytest.raises(ValueError, match="ticker"):
+        to_rows("menthorq_dealer_positioning", r, CAP)
+
+
+def test_gamma_levels_null_timestamp_raises_valueerror():
+    r = parse_tool_text("menthorq_gamma_levels", _env(
+        {"ticker": "SPX", "frequency": "eod", "timestamp": None}))
+    with pytest.raises(ValueError, match="timestamp"):
+        to_rows("menthorq_gamma_levels", r, CAP)

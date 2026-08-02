@@ -34,11 +34,18 @@ def failure_streak(conn: sqlite3.Connection) -> int:
     return streak
 
 
+_NOTIFY_SCRIPT = (
+    "on run argv\n"
+    "display notification (item 2 of argv) with title (item 1 of argv)\n"
+    "end run"
+)
+
+
 def notify_macos(title: str, message: str, runner=subprocess.run) -> None:
-    script = f'display notification "{message}" with title "{title}"'
     try:
-        runner(["osascript", "-e", script], check=False, capture_output=True)
-    except OSError:
+        runner(["osascript", "-e", _NOTIFY_SCRIPT, title, message],
+               check=False, capture_output=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired):
         pass
 
 
@@ -47,7 +54,8 @@ def status_report(conn: sqlite3.Connection) -> dict:
     cycles = conn.execute(
         "SELECT cycle_id, MAX(error IS NOT NULL) AS failed, MAX(finished_at) AS done"
         " FROM scrape_runs WHERE tool IS NOT NULL"
-        " AND started_at >= datetime('now', '-1 day') GROUP BY cycle_id").fetchall()
+        " AND julianday(started_at) >= julianday('now', '-1 day')"
+        " GROUP BY cycle_id").fetchall()
     fresh = {}
     for row in conn.execute(
             "SELECT tool, MAX(finished_at) AS last_ok FROM scrape_runs"

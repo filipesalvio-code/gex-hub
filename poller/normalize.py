@@ -41,7 +41,10 @@ def _first(d: dict, *keys: str):
 def _req(tool: str, d: dict, key: str):
     if not isinstance(d, dict) or key not in d:
         raise ValueError(f"{tool}: missing required field '{key}'")
-    return d[key]
+    v = d[key]
+    if v is None or (isinstance(v, str) and not v.strip()):
+        raise ValueError(f"{tool}: empty required field '{key}'")
+    return v
 
 
 def _base(tool: str, ticker: str, ts: str, cap: str) -> dict:
@@ -63,7 +66,7 @@ def to_rows(tool: str, result: ToolResult, captured_at: str) -> tuple[str, list[
                "payload": payload, "captured_at": captured_at, "source": src}
         return "gamma_levels", [row]
     if tool == "menthorq_dealer_positioning":
-        row = {"ticker": d.get("ticker", ""), "ts": _req(tool, d, "reference_timestamp"),
+        row = {"ticker": _req(tool, d, "ticker"), "ts": _req(tool, d, "reference_timestamp"),
                "net_gex": d.get("net_gex"), "net_dex": d.get("net_dex"),
                "gex_dte_0_7d": d.get("gex_dte_0_7d"), "gex_dte_8_30d": d.get("gex_dte_8_30d"),
                "gex_dte_over_30d": d.get("gex_dte_over_30d"),

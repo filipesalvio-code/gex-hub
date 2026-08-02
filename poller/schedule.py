@@ -1,13 +1,14 @@
-"""Market-hours gate (US equities, UTC). Holiday check happens at runtime
-via menthorq_market_status in poll.py."""
+"""Market-hours gate (US equities, America/New_York). Holiday check happens at
+runtime via menthorq_market_status in poll.py."""
 from datetime import UTC, datetime, time
+from zoneinfo import ZoneInfo
 
-_OPEN, _CLOSE = time(13, 30), time(20, 0)
+_ET = ZoneInfo("America/New_York")
+_OPEN, _CLOSE = time(9, 30), time(16, 0)
 
 
 def in_market_window(now: datetime) -> bool:
     if now.tzinfo is None:
         now = now.replace(tzinfo=UTC)
-    else:
-        now = now.astimezone(UTC)
-    return now.weekday() < 5 and _OPEN <= now.time() < _CLOSE
+    local = now.astimezone(_ET)
+    return local.weekday() < 5 and _OPEN <= local.time() < _CLOSE

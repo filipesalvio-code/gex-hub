@@ -1,3 +1,5 @@
+import sqlite3
+
 import pytest
 
 from poller.db import begin_cycle, finish_cycle, init_db, insert_rows, record_call
@@ -71,3 +73,43 @@ def test_record_call_explicit_source():
     src = conn.execute(
         "SELECT source FROM scrape_runs WHERE tool='menthorq_prices'").fetchone()[0]
     assert src == "custom"
+
+
+def test_init_db_fails_on_old_sqlite(monkeypatch):
+    monkeypatch.setattr(sqlite3, "sqlite_version_info", (3, 34, 0))
+    with pytest.raises(RuntimeError, match="SQLite"):
+        init_db(":memory:")
+
+
+_OLD_PCR_SCHEMA = """
+CREATE TABLE put_call_ratio (
+  ticker TEXT NOT NULL, ts TEXT NOT NULL,
+  volume_calls REAL, volume_puts REAL, ratio REAL,
+  payload TEXT NOT NULL, captured_at TEXT NOT NULL, source TEXT NOT NULL,
+  UNIQUE (ticker, ts)
+);
+"""
+
+
+def test_init_db_migrates_old_put_call_ratio_schema(tmp_path):
+    path = tmp_path / "old.db"
+    old = sqlite3.connect(path)
+    old.executescript(_OLD_PCR_SCHEMA)
+    old.execute(
+        "INSERT INTO put_call_ratio VALUES ('SPX','2026-07-01',1e6,9e5,0.9,"
+        " '{\"a\":1}','2026-07-01T14:00:00+00:00','menthorq')")
+    old.commit()
+    old.close()
+
+    conn = init_db(path)
+    sql = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table'"
+        " AND name='put_call_ratio'").fetchone()[0]
+    assert "UNIQUE (ticker, ts, source)" in sql
+    rows = conn.execute("SELECT * FROM put_call_ratio").fetchall()
+    assert len(rows) == 1 and rows[0]["ticker"] == "SPX"
+    base = {"ticker": "SPX", "ts": "2026-07-01", "volume_calls": 1e6,
+            "volume_puts": 9e5, "ratio": 0.9, "payload": "{}",
+            "captured_at": "2026-07-01T14:00:00+00:00"}
+    assert insert_rows(conn, "put_call_ratio", [{**base, "source": "spotgamma"}]) == 1
+    assert insert_rows(conn, "put_call_ratio", [{**base, "source": "menthorq"}]) == 0
