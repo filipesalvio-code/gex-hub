@@ -1,4 +1,4 @@
-from conftest import insert_key_level
+from tests.conftest import insert_key_level
 
 import gex_scraper
 import positioning_artifact
