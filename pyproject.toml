@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.5"]
+dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.5"]
 
 [tool.setuptools]
 py-modules = ["gex_scraper", "positioning_artifact", "plot_spx_gamma"]
@@ -41,3 +41,17 @@ extend-exclude = ["attic"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "unit: pure-function tests, no subprocess, no sqlite files",
+    "integration: stdio subprocess and/or real sqlite file I/O",
+    "live: hits real MCP servers and bridge daemon (needs --runlive)",
+]
+
+[tool.coverage.run]
+source = ["poller"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_also = ["if __name__ == .__main__.:"]
